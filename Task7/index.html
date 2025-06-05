@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search Users</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    #search {
+      padding: 10px;
+      width: 300px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      background: white;
+      margin-bottom: 10px;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #007BFF;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Search Users</h1>
+  <input type="text" id="search" placeholder="Search by name or email..." />
+  <ul id="userList"></ul>
+
+  <script>
+    const userList = document.getElementById('userList');
+    const searchInput = document.getElementById('search');
+    let allUsers = [];
+
+    // Fetch user data from API
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(response => response.json())
+      .then(users => {
+        allUsers = users;
+        displayUsers(users);
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+        userList.innerHTML = '<li>Failed to load users.</li>';
+      });
+
+    // Display users in the list
+    function displayUsers(users) {
+      userList.innerHTML = ''; // Clear existing list
+      if (users.length === 0) {
+        userList.innerHTML = '<li>No users found.</li>';
+        return;
+      }
+      users.forEach(user => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="highlight">${user.name}</span> - ${user.email}`;
+        userList.appendChild(li);
+      });
+    }
+
+    // Filter users on search input
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      const filteredUsers = allUsers.filter(user =>
+        user.name.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query)
+      );
+      displayUsers(filteredUsers);
+    });
+  </script>
+
+</body>
+</html>
